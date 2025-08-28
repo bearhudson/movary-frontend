@@ -1,18 +1,11 @@
 const express = require('express');
 const axios = require('axios');
 const app = express();
-const PORT = 3000;
 
 // Load environment variables from a .env file
 require('dotenv').config();
 
-// --- IMPORTANT: Set up your .env file with these constants ---
-// MOVERY_BASE_URL="https://birdsnestmovies.com"
-// API_CLIENT_STRING="my-nodejs-app"
-// USER_EMAIL="movary@selfdestroyedindustries.com"
-// USER_PASSWORD="testtest"
-// USER_ID="brian"
-
+const PORT = process.env.PORT;
 const MOVERY_BASE_URL = process.env.MOVERY_BASE_URL; 
 const API_CLIENT_STRING = process.env.API_CLIENT_STRING; 
 const USER_EMAIL = process.env.USER_EMAIL;
