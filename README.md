@@ -1,6 +1,6 @@
-#### A Movary frontend to display the latest addition to your watchlist.
+## A Movary frontend to display the latest addition to your watchlist. 
 
-### You'll need to setup a .env file in the root of your Node folder.
+#### You'll need to setup a .env file in the root of your Node folder.
 
 PORT
 
