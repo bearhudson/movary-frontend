@@ -89,7 +89,7 @@ app.get('/', async (req, res) => {
             htmlContent = `
                 <div class="movie-card">
                     <img src="${movieData.posterPath}" alt="${movieData.title} Poster" class="movie-poster">
-                    <h1 class="movie-title">${movieData.title}</h1>
+                    <h1 class="movie-title">🎥 ${movieData.title}</h1>
                     <p class="movie-info"><strong>Release Year:</strong> ${movieData.releaseDate ? movieData.releaseDate.substring(0, 4) : 'N/A'}</p>
                     <p class="movie-info"><hr>${movieData.overview}</p>
                 </div>
@@ -121,7 +121,7 @@ app.get('/', async (req, res) => {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>The Next Nest Feature</title>
+            <title>📣 The Next Nest Feature 🍿</title>
 	    <style>
                 body {
                     font-family: Arial, sans-serif;
