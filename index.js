@@ -3,12 +3,21 @@ const axios = require('axios');
 const app = express();
 const PORT = 80;
 
-// --- IMPORTANT: REPLACE WITH YOUR OWN DATA ---
-const MOVERY_BASE_URL = 'https://birdsnestmovies.com'; 
-const API_CLIENT_STRING = 'my-nodejs-app'; 
-const USER_EMAIL = 'movary@selfdestroyedindustries.com';
-const USER_PASSWORD = 'testtest'; 
-const USER_ID = 'brian';
+// Load environment variables from a .env file
+require('dotenv').config();
+
+// --- IMPORTANT: Set up your .env file with these constants ---
+// MOVERY_BASE_URL="https://birdsnestmovies.com"
+// API_CLIENT_STRING="my-nodejs-app"
+// USER_EMAIL="movary@selfdestroyedindustries.com"
+// USER_PASSWORD="testtest"
+// USER_ID="brian"
+
+const MOVERY_BASE_URL = process.env.MOVERY_BASE_URL; 
+const API_CLIENT_STRING = process.env.API_CLIENT_STRING; 
+const USER_EMAIL = process.env.USER_EMAIL;
+const USER_PASSWORD = process.env.USER_PASSWORD; 
+const USER_ID = process.env.USER_ID;
 
 /**
  * Generates an authentication token from the Movary API.
@@ -66,16 +75,24 @@ app.get('/', async (req, res) => {
     let htmlContent = '';
     let movieData = null;
 
+    console.log(`[DEBUG] Received a new request from ${req.ip}`);
     try {
         // Step 1: Get the authentication token
+        console.log(`[DEBUG] Attempting to get auth token for ${USER_EMAIL}...`);
         const apiToken = await getAuthToken();
 
         if (apiToken) {
+            console.log(`[DEBUG] Auth token obtained successfully.`);
             // Step 2: Fetch the movie data using the token
+            console.log(`[DEBUG] Fetching last movie for user ${USER_ID}...`);
             movieData = await getLastAddedMovie(apiToken);
+            console.log(`[DEBUG] Movie data fetched.`);
+        } else {
+            console.log(`[DEBUG] Failed to obtain a token. Skipping movie data fetch.`);
         }
 
         if (movieData) {
+            console.log(`[DEBUG] Movie found: ${movieData.title}`);
             // Build the HTML response if movie data is found
             htmlContent = `
                 <div class="movie-card">
@@ -84,13 +101,16 @@ app.get('/', async (req, res) => {
                     <p class="movie-info"><strong>Added to Watchlist:</strong> ${new Date(movieData.added_at).toLocaleDateString()}</p>
                 </div>
             `;
+            console.log(`[DEBUG] Sending movie card HTML.`);
         } else {
+            console.log(`[DEBUG] No movie data found.`);
             // HTML for when no movie data is available
             htmlContent = `
                 <div class="message">
                     <p>Could not retrieve movie data or no movies found.</p>
                 </div>
             `;
+            console.log(`[DEBUG] Sending "no movie found" HTML.`);
         }
     } catch (error) {
         // HTML for server-side errors
@@ -101,6 +121,7 @@ app.get('/', async (req, res) => {
             </div>
         `;
         console.error('Server error:', error);
+        console.log(`[DEBUG] Sending error HTML.`);
     }
 
     // Send the final HTML response
@@ -165,4 +186,3 @@ app.listen(PORT, () => {
     console.log(`Open a browser and navigate to http://localhost:${PORT} to view the page.`);
     console.log(`Note: Running on port 80 may require elevated permissions (e.g., 'sudo node index.js' on Linux/macOS).`);
 });
-
