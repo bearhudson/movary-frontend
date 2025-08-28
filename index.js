@@ -24,6 +24,13 @@ const USER_ID = process.env.USER_ID;
  * @returns {Promise<string|null>} The API token or null if authentication fails.
  */
 async function getAuthToken() {
+    // [DEBUG] Dump variables before the request
+    console.log("[DEBUG] Authentication variables:");
+    console.log(`[DEBUG] MOVERY_BASE_URL: ${MOVERY_BASE_URL}`);
+    console.log(`[DEBUG] API_CLIENT_STRING: ${API_CLIENT_STRING}`);
+    console.log(`[DEBUG] USER_EMAIL: ${USER_EMAIL}`);
+    console.log(`[DEBUG] USER_PASSWORD: ${USER_PASSWORD ? '********' : 'undefined'}`); // Log a masked password for security
+    
     try {
         const response = await axios.post(`${MOVERY_BASE_URL}/api/authentication/token`, {
             email: USER_EMAIL,
@@ -35,7 +42,7 @@ async function getAuthToken() {
                 'X-Movary-Client': API_CLIENT_STRING
             }
         });
-        return response.data.token;
+        return response.data.authToken;
     } catch (error) {
         console.error("Authentication failed. Check your credentials.");
         console.error(error.response ? error.response.data : error.message);
@@ -46,7 +53,7 @@ async function getAuthToken() {
 /**
  * Fetches the most recently added movie from a user's watchlist using a valid token.
  * @param {string} token The API token for authentication.
- * @returns {Promise<object|null>} The movie data or null if the request fails.
+ * @returns {Promise<object|null>} The movie entry data or null if the request fails.
  */
 async function getLastAddedMovie(token) {
     try {
@@ -62,7 +69,12 @@ async function getLastAddedMovie(token) {
                 sortOrder: 'desc'
             }
         });
-        return response.data.data[0] || null;
+        
+        // The entire entry from the watchlist array
+        const movieEntry = response.data.watchlist[0];
+        
+        // Return the whole entry, as it contains both the movie and addedAt date
+        return movieEntry || null;
     } catch (error) {
         console.error("Failed to fetch watchlist data.");
         console.error(error.response ? error.response.data : error.message);
@@ -73,7 +85,7 @@ async function getLastAddedMovie(token) {
 // Set up the main web server route
 app.get('/', async (req, res) => {
     let htmlContent = '';
-    let movieData = null;
+    let movieEntry = null; // Renamed variable to reflect the data structure
 
     console.log(`[DEBUG] Received a new request from ${req.ip}`);
     try {
@@ -85,20 +97,24 @@ app.get('/', async (req, res) => {
             console.log(`[DEBUG] Auth token obtained successfully.`);
             // Step 2: Fetch the movie data using the token
             console.log(`[DEBUG] Fetching last movie for user ${USER_ID}...`);
-            movieData = await getLastAddedMovie(apiToken);
+            movieEntry = await getLastAddedMovie(apiToken);
             console.log(`[DEBUG] Movie data fetched.`);
         } else {
             console.log(`[DEBUG] Failed to obtain a token. Skipping movie data fetch.`);
         }
 
-        if (movieData) {
+        if (movieEntry && movieEntry.movie) { // Check for both movieEntry and the nested movie object
+            const movieData = movieEntry.movie;
+            const addedAt = movieEntry.addedAt;
             console.log(`[DEBUG] Movie found: ${movieData.title}`);
             // Build the HTML response if movie data is found
             htmlContent = `
                 <div class="movie-card">
+                    <img src="${movieData.posterPath}" alt="${movieData.title} Poster" class="movie-poster">
                     <h1 class="movie-title">${movieData.title}</h1>
-                    <p class="movie-info"><strong>Release Year:</strong> ${movieData.release_year}</p>
-                    <p class="movie-info"><strong>Added to Watchlist:</strong> ${new Date(movieData.added_at).toLocaleDateString()}</p>
+                    <p class="movie-info"><strong>Release Year:</strong> ${movieData.releaseDate ? movieData.releaseDate.substring(0, 4) : 'N/A'}</p>
+                    <p class="movie-info"><strong>Added to Watchlist:</strong> ${new Date(addedAt).toLocaleDateString()}</p>
+                    <p class="movie-info"><strong>Overview:</strong> ${movieData.overview}</p>
                 </div>
             `;
             console.log(`[DEBUG] Sending movie card HTML.`);
@@ -171,6 +187,12 @@ app.get('/', async (req, res) => {
                     color: #a51a1a;
                     border: 1px solid #a51a1a;
                 }
+                .movie-poster {
+                    max-width: 100%;
+                    height: auto;
+                    border-radius: 8px;
+                    margin-bottom: 1rem;
+                }
             </style>
         </head>
         <body>
@@ -186,3 +208,4 @@ app.listen(PORT, () => {
     console.log(`Open a browser and navigate to http://localhost:${PORT} to view the page.`);
     console.log(`Note: Running on port 80 may require elevated permissions (e.g., 'sudo node index.js' on Linux/macOS).`);
 });
+
