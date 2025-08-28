@@ -24,13 +24,6 @@ const USER_ID = process.env.USER_ID;
  * @returns {Promise<string|null>} The API token or null if authentication fails.
  */
 async function getAuthToken() {
-    // [DEBUG] Dump variables before the request
-    console.log("[DEBUG] Authentication variables:");
-    console.log(`[DEBUG] MOVERY_BASE_URL: ${MOVERY_BASE_URL}`);
-    console.log(`[DEBUG] API_CLIENT_STRING: ${API_CLIENT_STRING}`);
-    console.log(`[DEBUG] USER_EMAIL: ${USER_EMAIL}`);
-    console.log(`[DEBUG] USER_PASSWORD: ${USER_PASSWORD ? '********' : 'undefined'}`); // Log a masked password for security
-    
     try {
         const response = await axios.post(`${MOVERY_BASE_URL}/api/authentication/token`, {
             email: USER_EMAIL,
@@ -86,19 +79,12 @@ async function getLastAddedMovie(token) {
 app.get('/', async (req, res) => {
     let htmlContent = '';
     let movieEntry = null; // Renamed variable to reflect the data structure
-
-    console.log(`[DEBUG] Received a new request from ${req.ip}`);
     try {
         // Step 1: Get the authentication token
-        console.log(`[DEBUG] Attempting to get auth token for ${USER_EMAIL}...`);
         const apiToken = await getAuthToken();
 
         if (apiToken) {
-            console.log(`[DEBUG] Auth token obtained successfully.`);
-            // Step 2: Fetch the movie data using the token
-            console.log(`[DEBUG] Fetching last movie for user ${USER_ID}...`);
             movieEntry = await getLastAddedMovie(apiToken);
-            console.log(`[DEBUG] Movie data fetched.`);
         } else {
             console.log(`[DEBUG] Failed to obtain a token. Skipping movie data fetch.`);
         }
@@ -106,7 +92,6 @@ app.get('/', async (req, res) => {
         if (movieEntry && movieEntry.movie) { // Check for both movieEntry and the nested movie object
             const movieData = movieEntry.movie;
             const addedAt = movieEntry.addedAt;
-            console.log(`[DEBUG] Movie found: ${movieData.title}`);
             // Build the HTML response if movie data is found
             htmlContent = `
                 <div class="movie-card">
@@ -117,16 +102,13 @@ app.get('/', async (req, res) => {
                     <p class="movie-info"><strong>Overview:</strong> ${movieData.overview}</p>
                 </div>
             `;
-            console.log(`[DEBUG] Sending movie card HTML.`);
         } else {
-            console.log(`[DEBUG] No movie data found.`);
             // HTML for when no movie data is available
             htmlContent = `
                 <div class="message">
                     <p>Could not retrieve movie data or no movies found.</p>
                 </div>
             `;
-            console.log(`[DEBUG] Sending "no movie found" HTML.`);
         }
     } catch (error) {
         // HTML for server-side errors
@@ -148,44 +130,53 @@ app.get('/', async (req, res) => {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Last Added Movie</title>
-            <style>
+	    <style>
                 body {
                     font-family: Arial, sans-serif;
-                    background-color: #f0f2f5;
+                    background-color: #000000;
+                    color: #D3D3D3;
                     display: flex;
                     justify-content: center;
                     align-items: center;
                     height: 100vh;
                     margin: 0;
                 }
-                .movie-card, .message, .error-message {
-                    background-color: #ffffff;
+                .movie-card {
+                    background-color: #1A1A1A;
                     padding: 2.5rem;
                     border-radius: 12px;
-                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
                     text-align: center;
                     max-width: 500px;
                     width: 90%;
                 }
+                .message, .error-message {
+                    background-color: #1A1A1A;
+                    padding: 2rem;
+                    font-size: 1.2rem;
+                    color: #D3D3D3;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+                    text-align: center;
+                    max-width: 500px;
+                    width: 90%;
+                }
+                .error-message {
+                    color: #a51a1a;
+                    border: 1px solid #a51a1a;
+                }
                 .movie-title {
                     font-size: 2.5rem;
-                    color: #333;
+                    color: #D3D3D3;
                     margin-bottom: 0.5rem;
                 }
                 .movie-info {
                     font-size: 1.2rem;
-                    color: #666;
+                    color: #D3D3D3;
                     margin: 0.5rem 0;
                 }
-                .message, .error-message {
-                    padding: 2rem;
-                    font-size: 1.2rem;
-                    color: #555;
-                }
-                .error-message {
-                    background-color: #ffebeb;
-                    color: #a51a1a;
-                    border: 1px solid #a51a1a;
+                .movie-overview {
+                    color: #A9A9A9;
                 }
                 .movie-poster {
                     max-width: 100%;
