@@ -12,6 +12,7 @@ const USER_EMAIL = process.env.USER_EMAIL;
 const USER_PASSWORD = process.env.USER_PASSWORD; 
 const USER_ID = process.env.USER_ID;
 
+
 /**
  * Generates an authentication token from the Movary API.
  * @returns {Promise<string|null>} The API token or null if authentication fails.
@@ -68,14 +69,23 @@ async function getLastAddedMovie(token) {
     }
 }
 
+async function readMessageFromFile() {
+    try {
+        const fileContent = await fs.readFile('motd.txt', 'utf8');
+        return fileContent;
+    } catch (error) {
+        console.error("motd.txt file not found or could not be read. Using default message.");
+        return ""; // Return an empty string to prevent the app from crashing
+    }
+}
+
 // Set up the main web server route
 app.get('/', async (req, res) => {
     let htmlContent = '';
     let movieEntry = null; // Renamed variable to reflect the data structure
     try {
-        // Step 1: Get the authentication token
         const apiToken = await getAuthToken();
-
+	const customMessage = await readMessageFromFile();
         if (apiToken) {
             movieEntry = await getLastAddedMovie(apiToken);
         } else {
@@ -88,6 +98,7 @@ app.get('/', async (req, res) => {
             // Build the HTML response if movie data is found
             htmlContent = `
                 <div class="movie-card">
+		    <p class="custom-message">${customMessage}</p>
                     <img src="${movieData.posterPath}" alt="${movieData.title} Poster" class="movie-poster">
                     <h1 class="movie-title">🎥 ${movieData.title}</h1>
                     <p class="movie-info"><strong>Release Year:</strong> ${movieData.releaseDate ? movieData.releaseDate.substring(0, 4) : 'N/A'}</p>
