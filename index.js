@@ -98,7 +98,7 @@ app.get('/', async (req, res) => {
                     <img src="${movieData.posterPath}" alt="${movieData.title} Poster" class="movie-poster">
                     <h1 class="movie-title">${movieData.title}</h1>
                     <p class="movie-info"><strong>Release Year:</strong> ${movieData.releaseDate ? movieData.releaseDate.substring(0, 4) : 'N/A'}</p>
-                    <p class="movie-info"><hr><strong>${movieData.overview}</strong></p>
+                    <p class="movie-info"><hr>${movieData.overview}</p>
                 </div>
             `;
         } else {
