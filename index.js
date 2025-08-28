@@ -98,8 +98,7 @@ app.get('/', async (req, res) => {
                     <img src="${movieData.posterPath}" alt="${movieData.title} Poster" class="movie-poster">
                     <h1 class="movie-title">${movieData.title}</h1>
                     <p class="movie-info"><strong>Release Year:</strong> ${movieData.releaseDate ? movieData.releaseDate.substring(0, 4) : 'N/A'}</p>
-                    <p class="movie-info"><strong>Added to Watchlist:</strong> ${new Date(addedAt).toLocaleDateString()}</p>
-                    <p class="movie-info"><strong>Overview:</strong> ${movieData.overview}</p>
+                    <p class="movie-info"><hr><strong>${movieData.overview}</strong></p>
                 </div>
             `;
         } else {
@@ -129,7 +128,7 @@ app.get('/', async (req, res) => {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Last Added Movie</title>
+            <title>The Next Nest Feature</title>
 	    <style>
                 body {
                     font-family: Arial, sans-serif;
