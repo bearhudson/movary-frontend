@@ -1,8 +1,6 @@
 const express = require('express');
 const axios = require('axios');
 const app = express();
-const fs = require('fs/promises');
-const path = require('path');
 
 // Load environment variables from a .env file
 require('dotenv').config();
