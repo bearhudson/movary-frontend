@@ -21,3 +21,5 @@ Required Env Vars:
 Start the app as you would a normal node application. 
 
 Containerization coming soon!
+
+![Example](img/screenshot.png?size=50)
