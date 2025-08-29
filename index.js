@@ -151,7 +151,7 @@ class MovaryApp {
         }
 
         res.send(`
-            <-- Handmade with love by Brian Hudson  -->
+            <!-- Handmade with love by Brian Hudson  -->
             <!DOCTYPE html>
             <html lang="en">
             <head>
