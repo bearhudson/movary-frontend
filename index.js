@@ -132,7 +132,7 @@ class MovaryApp {
                         <h1 class="movie-title">🎥 ${movieData.title}</h1>
                         <p class="movie-info">${movieData.releaseDate ? movieData.releaseDate.substring(0, 4) : 'N/A'}</p><hr>
                         <p class="movie-info movie-overview">${movieData.overview}</p><hr>
-                        <p class="custom-message">Showing: ${customMessage}</p>
+                        <p class="custom-message">🍿 Show: ${customMessage}</p>
                     </div>
                 `;
             } else {
