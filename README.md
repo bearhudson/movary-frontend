@@ -2,18 +2,21 @@
 
 #### You'll need to setup a .env file in the root of your Node folder.
 
-PORT
+Required Env Vars:
 
-MOVERY_BASE_URL
+```PORT``` -- Application port. 
 
-API_CLIENT_STRING 
+```MOVERY_BASE_URL``` -- Movary URL
 
-USER_EMAIL
+```API_CLIENT_STRING``` -- Application identifier string
 
-USER_PASSWORD
+```USER_EMAIL``` -- The user email account that has the watch list
 
-USER_ID
+```USER_PASSWORD``` -- User Password
 
+```USER_ID``` -- User ID number
+
+```NEXT_DT``` -- Datetime of the next showtime. eg: '2025-09-13T22:00:00.000Z'
 
 Start the app as you would a normal node application. 
 
